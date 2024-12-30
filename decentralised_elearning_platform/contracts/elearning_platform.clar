@@ -239,3 +239,18 @@
         )
     )
 )
+
+(define-public (upvote-post (course-id uint) (post-id uint))
+    (let ((post (get-discussion-post course-id post-id)))
+        (match post
+            post-data
+            (ok (map-set course-discussions
+                { course-id: course-id, post-id: post-id }
+                (merge post-data { 
+                    upvotes: (+ (get upvotes post-data) u1)
+                })
+            ))
+            err-not-found
+        )
+    )
+)
