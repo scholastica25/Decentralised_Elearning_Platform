@@ -254,3 +254,27 @@
         )
     )
 )
+
+;; Instructor Earnings Management
+(define-public (withdraw-earnings (amount uint))
+    (let ((instructor-data (get-instructor tx-sender)))
+        (match instructor-data
+            data
+            (let ((current-earnings (get total-earnings data)))
+                (if (>= current-earnings amount)
+                    (begin
+                        (try! (stx-transfer? amount contract-owner tx-sender))
+                        (ok (map-set instructor-details
+                            { instructor: tx-sender }
+                            (merge data {
+                                total-earnings: (- current-earnings amount)
+                            })
+                        ))
+                    )
+                    err-insufficient-balance
+                )
+            )
+            err-not-found
+        )
+    )
+)
