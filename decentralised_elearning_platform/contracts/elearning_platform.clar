@@ -286,3 +286,25 @@
         err-unauthorized
     )
 )
+
+;; Achievement System
+(define-public (award-achievement (student principal) (achievement (string-ascii 50)))
+    (if (is-eq tx-sender contract-owner)
+        (let ((profile (get-student-profile student)))
+            (match profile
+                profile-data
+                (ok (map-set student-profiles
+                    { student: student }
+                    (merge profile-data {
+                        achievements: (unwrap! (as-max-len? 
+                            (append (get achievements profile-data) achievement)
+                            u10)
+                            err-invalid-input)
+                    })
+                ))
+                err-not-found
+            )
+        )
+        err-unauthorized
+    )
+)
