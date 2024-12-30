@@ -140,3 +140,58 @@
         )
     )
 )
+
+;; Course Management
+(define-public (create-course 
+    (title (string-ascii 100))
+    (price uint)
+    (content-hash (string-ascii 64))
+    (category (string-ascii 50))
+    (description (string-ascii 500))
+    (prerequisites (list 10 uint)))
+    (let
+        ((course-id (var-get next-course-id))
+         (instructor (get-instructor tx-sender)))
+        (if (is-none instructor)
+            err-unauthorized
+            (begin
+                (map-set courses
+                    { course-id: course-id }
+                    {
+                        title: title,
+                        instructor: tx-sender,
+                        price: price,
+                        content-hash: content-hash,
+                        is-active: true,
+                        category: category,
+                        description: description,
+                        total-students: u0,
+                        average-rating: u0,
+                        total-ratings: u0,
+                        prerequisites: prerequisites,
+                        created-at: block-height
+                    }
+                )
+                (var-set next-course-id (+ course-id u1))
+                (ok course-id)
+            )
+        )
+    )
+)
+
+;; Course Progress Tracking
+(define-public (update-progress (course-id uint) (progress uint))
+    (let ((enrollment (get-enrollment tx-sender course-id)))
+        (match enrollment
+            enrollment-data
+            (ok (map-set enrollments
+                { student: tx-sender, course-id: course-id }
+                (merge enrollment-data { 
+                    progress: progress,
+                    last-accessed: block-height
+                })
+            ))
+            err-not-found
+        )
+    )
+)
