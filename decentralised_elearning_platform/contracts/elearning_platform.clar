@@ -195,3 +195,22 @@
         )
     )
 )
+
+;; Certificate Generation
+(define-public (generate-certificate (course-id uint) (certificate-hash (string-ascii 64)))
+    (let ((enrollment (get-enrollment tx-sender course-id)))
+        (match enrollment
+            enrollment-data
+            (if (get completed enrollment-data)
+                (ok (map-set enrollments
+                    { student: tx-sender, course-id: course-id }
+                    (merge enrollment-data { 
+                        completion-certificate: (some certificate-hash)
+                    })
+                ))
+                err-unauthorized
+            )
+            err-not-found
+        )
+    )
+)
