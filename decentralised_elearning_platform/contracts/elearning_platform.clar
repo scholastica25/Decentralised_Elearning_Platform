@@ -278,3 +278,11 @@
         )
     )
 )
+
+;; Platform Fee Management
+(define-public (set-platform-fee (new-fee uint))
+    (if (and (is-eq tx-sender contract-owner) (<= new-fee u100))
+        (ok (var-set platform-fee-percentage new-fee))
+        err-unauthorized
+    )
+)
