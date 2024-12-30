@@ -78,3 +78,9 @@
         upvotes: uint
     }
 )
+
+
+;; Data Variables
+(define-data-var next-course-id uint u1)
+(define-data-var next-post-id uint u1)
+(define-data-var platform-fee-percentage uint u5) ;; 5% platform fee
