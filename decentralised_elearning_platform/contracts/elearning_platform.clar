@@ -84,3 +84,24 @@
 (define-data-var next-course-id uint u1)
 (define-data-var next-post-id uint u1)
 (define-data-var platform-fee-percentage uint u5) ;; 5% platform fee
+
+;; Read-only functions
+(define-read-only (get-course (course-id uint))
+    (map-get? courses { course-id: course-id })
+)
+
+(define-read-only (get-enrollment (student principal) (course-id uint))
+    (map-get? enrollments { student: student, course-id: course-id })
+)
+
+(define-read-only (get-instructor (instructor principal))
+    (map-get? instructor-details { instructor: instructor })
+)
+
+(define-read-only (get-student-profile (student principal))
+    (map-get? student-profiles { student: student })
+)
+
+(define-read-only (get-discussion-post (course-id uint) (post-id uint))
+    (map-get? course-discussions { course-id: course-id, post-id: post-id })
+)
