@@ -105,3 +105,38 @@
 (define-read-only (get-discussion-post (course-id uint) (post-id uint))
     (map-get? course-discussions { course-id: course-id, post-id: post-id })
 )
+
+;; Public functions
+
+;; Student Profile Management
+(define-public (create-student-profile (name (string-ascii 50)))
+    (let ((existing-profile (get-student-profile tx-sender)))
+        (if (is-some existing-profile)
+            err-already-exists
+            (ok (map-set student-profiles
+                { student: tx-sender }
+                {
+                    name: name,
+                    completed-courses: u0,
+                    total-spent: u0,
+                    achievements: (list),
+                    joined-at: block-height,
+                    preferences: (list)
+                }
+            ))
+        )
+    )
+)
+
+(define-public (update-student-preferences (preferences (list 5 (string-ascii 50))))
+    (let ((profile (get-student-profile tx-sender)))
+        (match profile
+            profile-data
+            (ok (map-set student-profiles
+                { student: tx-sender }
+                (merge profile-data { preferences: preferences })
+            ))
+            err-not-found
+        )
+    )
+)
