@@ -214,3 +214,28 @@
         )
     )
 )
+
+;; Discussion Forum
+(define-public (create-discussion-post (course-id uint) (content (string-ascii 500)))
+    (let ((enrollment (get-enrollment tx-sender course-id))
+          (post-id (var-get next-post-id)))
+        (match enrollment
+            enrollment-data
+            (begin
+                (map-set course-discussions
+                    { course-id: course-id, post-id: post-id }
+                    {
+                        author: tx-sender,
+                        content: content,
+                        timestamp: block-height,
+                        replies: (list),
+                        upvotes: u0
+                    }
+                )
+                (var-set next-post-id (+ post-id u1))
+                (ok post-id)
+            )
+            err-unauthorized
+        )
+    )
+)
